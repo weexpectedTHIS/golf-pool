@@ -1,0 +1,53 @@
+<script type="text/javascript">
+  Util.add_favicon('<%= @list.slug[0..2].upcase %>');
+</script>
+<div><a href="/">Home</a></div>
+<a href="#" id="item_new_link">New item</a>
+<form action="/items/create/<%= @list.slug %>" method="post" id="item_new_form" style="display: none;">
+  <div>
+    Note: <textarea name="note" id="form_item_note" class="required"></textarea>
+    <input type="submit" value="Create item">
+  </div>
+</form>
+<br />
+<h2><%= @list.name %>:</h2>
+<% if @list.items.count > 0 %>
+  <div>
+    <% @list.items.each do |item| %>
+      <div class="note">
+        <%= item.ordering + 1 %> <%= item.note %>
+        <span class="controls">
+          <a href="#" class="link_item_edit">edit</a>
+          <span class="display_none">
+            <a href="#" class="link_item_prioritize">prioritize</a>
+            <form action="/items/update/<%= item.id %>" method="post" class="form_item_prioritize" style="display: none;">
+              <span>
+                <select name="ordering">
+                  <% (1..@list.items.size).each do |priority| %>
+                    <option value="<%= priority - 1 %>" <%= 'selected' if priority == (item.ordering + 1) %>><%= priority %></option>
+                  <% end %>
+                </select>
+                <input type="submit" value="Prioritize">
+              </span>
+            </form>
+            <a href="#" class="link_item_renotate">renotate</a>
+            <form action="/items/update/<%= item.id %>" method="post" class="form_item_renotate" style="display: none;">
+              <span>
+                <textarea name="note" class="required"><%= item.note %></textarea>
+                <input type="submit" value="Renotate">
+              </span>
+            </form>
+            <a href="#" class="link_item_destroy">delete</a>
+            <form action="/items/destroy/<%= item.id %>" method="post" class="form_item_destroy" style="display: none;">
+              <span>
+                <input type="submit" value="Really delete?">
+              </span>
+            </form>
+          </span>
+        </span>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div>None</div>
+<% end %>

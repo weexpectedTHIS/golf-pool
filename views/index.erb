@@ -1,0 +1,50 @@
+<span class="updated_at">
+  <a href="#" id="update">Update data</a> Last updated: <%= @last_updated.strftime('%m/%d/%Y at %I:%M%p') %> PST
+  <a href="#" id="change_brackets_link">Change picks</a>
+  <div id="change_brackets_form">
+    <form action="/update" method="post" id="list_new_form">
+      <div>
+        Passphrase: <input type="text" name="passphrase" />
+      </div>
+      <div>
+        Brackets: <textarea name="brackets"><%= JSON.pretty_generate(@brackets) %></textarea>
+      </div>
+      <div>
+        <input type="submit" value="Update">
+      </div>
+    </form>
+  </div>
+</span>
+<br />
+<br />
+<div class="tournament_info">
+  <div>Tournament: <%= @results['tournament'] %></div>
+  <div>Players: <%= @results['total_players'] %></div>
+  <div>Players Making Cut: <%= @results['players_making_cut'] %></div>
+  <div>Low Rounds of Day: <%= @results['low_rounds_of_day'].map{|i,v| "(round #{i}: #{v.join(', ')})"}.join(', ') %></div>
+  <div><em>Note: Keep in mind scoring will assume all of your picks made the cut until they don't on Saturday (i.e. everyone gets an extra 5 points for the first 2 rounds)</em></div>
+  <div><a href="http://www.majorschampionships.com/usopen/2012/scoring/" target="_blank">Link to Live Leaderboard</a></div>
+</div>
+<div style="clear: both;"></div>
+<br />
+<% @modified_brackets.each_with_index do |bracket, index| %>
+  <div class="bracket">
+    <div class="contestant"><%= bracket['contestant'] %> (Total Points: <%= bracket['total'] %>)</div>
+    <table>
+      <thead>
+        <th>Place</th>
+        <th>Name</th>
+        <th>Points</th>
+      <% bracket['picks'].each do |pick| %>
+        <tr>
+          <td><%= pick['place'] %></td>
+          <td><%= pick['name'] %></td>
+          <td><%= pick['value'] %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+  <% unless @modified_brackets[index + 1] && @modified_brackets[index + 1]['total'] == bracket['total'] %>
+    <div style="clear: both;"></div>
+  <% end %>
+<% end %>
